@@ -1,0 +1,73 @@
+/**
+ * Created by Jeffery Wang.
+ * Create Time: 2015-06-16 19:52
+ * Author Link: http://blog.wangjunfeng.com
+ */
+#nativeShare {
+    font-size: 13px;
+    height: 3rem;
+}
+
+#nativeShare .label {
+    font-size: 20px;
+}
+
+#nativeShare .list {
+    width: 90%;
+    margin: 0 auto;
+}
+
+#nativeShare .list span {
+    width: 30%;
+
+    display: inline-block;
+    text-align: center;
+    margin: 10px 0;
+}
+
+#nativeShare .list span i {
+    width: .8rem;
+    height: .8rem;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 5px;
+}
+
+
+#nativeShare .weibo i {
+    height: .8rem;
+    background: url('../assets/img/weibo.png') no-repeat;
+    background-size: .8rem .8rem;
+}
+
+#nativeShare .weixin i {
+    height: .8rem;
+    background: url('../assets/img/weixin_friend.png') no-repeat;
+    background-size: .8rem .8rem;
+}
+
+#nativeShare .weixin_timeline i {
+    height: .8rem;
+    background: url('../assets/img/weixin.png') no-repeat;
+    background-size: .8rem .8rem;
+}
+
+#nativeShare .qq i {
+    height: .8rem;
+    background: url('../assets/img/qq.png') no-repeat;
+    background-size: .8rem .8rem;
+}
+
+#nativeShare .qzone i {
+    height: .8rem;
+    background: url('../assets/img/qqzone.png') no-repeat;
+    background-size: .8rem .8rem;
+}
+
+#nativeShare .more i {
+     height: .8rem;
+    background: url('../assets/img/more.png') no-repeat;
+    background-size: .8rem .8rem;
+}
+
+

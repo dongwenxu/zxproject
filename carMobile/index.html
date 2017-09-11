@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width,inital-scale=1.0,
+    maximum-scale=1.0,user-scalable=no">
+    <meta name="format-detection" content="telephone=yes">
+   <title>豪雅名车</title>
+   <link rel="stylesheet" href="css/reset.css">
+   <link rel="stylesheet" href="css/weui.min.css">
+   <link rel="stylesheet" href="css/jquery-weui.css">
+   <!-- <link rel="stylesheet" href="css/jquery-weui.min.css"> -->
+   <link rel="stylesheet" href="css/index.css">
+   <script src="js/autophone.js"></script>
+
+</head>
+<body>
+   <div class="index">
+      <div class="car-model">
+         <div class="car-model-img">热门车型</div>
+      </div>
+      <div class="car-list"></div>
+      <div class="car-detail">
+         <div id="car-poup" class="weui-popup__container ">
+           <div class="weui-popup__overlay"></div>
+           <div class="weui-popup__modal car-poup">
+             <div class="car-poup-img">
+                <img src="" alt="" class="car-poup-img-img">
+                <div class="car-poup-img-num">
+                   <div class="car-poup-img-num-left"></div>
+                   <div class="car-poup-img-num-right"></div>
+                </div>
+             </div>
+             <div class="car-poup-con">
+               <h1 class="car-poup-con-h1">宝马1系</h1>
+               <div class="car-poup-con-price">指导价：25.6W-30.6W</div>
+               <div class="car-poup-con-person">联系人：高军</div>
+               <div class="car-poup-con-phone">联系电话：<a href="tel:15037034886" class="car-poup-con-a">15037034886</a></div>
+             </div>
+             <div class="car-poup-introduce">
+                <div class="car-poup-introduce-title"><span></span>产品介绍</div>
+                <p class="car-poup-introduce-p"></p>
+             </div>
+             <div class="car-poup-introduce-peizhi">
+                <div class="car-poup-introduce-title"><span></span>配置说明</div>
+                <p class="car-poup-introduce-peizhi-p"></p>
+             </div>
+             <div class="a-style">
+                <a href="javascript:;" class="weui-btn weui-btn_primary close-popup poup-close" >关闭</a>
+             </div>
+           </div>
+         </div>
+      </div>
+
+  <!-- 滚动加载 -->
+  <div class="weui-loadmore">
+    <i class="weui-loading"></i>
+    <span class="weui-loadmore__tips">正在加载</span>
+  </div>
+
+   </div>
+
+</body>
+<script src="js/jquery-3.2.1.min.js"></script>
+<script src="js/jquery-weui.min.js"></script>
+<script src="js/swiper.min.js"></script>
+<script>
+var http = 'http://10.60.10.69:8080/haoya/index';
+var loading = false; //状态标记
+  $(function (){
+
+$(".weui-loadmore").hide();
+     //详情
+    function poup() {
+      $("#car-poup").popup();
+    }
+    var page = 1;
+    list_ajax(page);
+
+    // 滚动加载
+      $(document.body).infinite().on("infinite", function(event) {
+        event.stopPropagation();
+        if (loading) return;
+        loading = true;
+        $(".weui-loadmore").show();
+        setTimeout(function() {
+          page ++;
+          list_ajax(page);
+          loading = false;
+        }, 1500); //模拟延迟
+      });
+
+// 获取列表
+    function list_ajax(page) {
+      $.ajax({
+        type: "post",
+        url: http + '/showCar',
+        data: {
+          pageNumber: page
+        },
+        dataType: "JSON",
+        success: function(data) {
+          if (data.ERRORCODE == 0) {
+            var content = data.RESULT.content;
+
+            var carId;
+                for (var i = 0; i < content.length; i++) {
+                 var html="<div class=\"car-list-model open-popup\" id="+ content[i].carId + "  data-target=\"#car-poup\">";
+                  if(content[i].files.length > 0){
+                    html+='<img src='+content[i].files[0].picture+'  class="car-list-model-img">';
+                  }
+                  html+='<div class="car-list-model-intro">' + '<h1 class="car-list-model-intro-h1">'+
+                         content[i].carName + '</h1>' + '<div class="car-list-model-intro-h2"> ' +
+                          '销售价：' + '<em>' + content[i].price  + '</em>' + '</div>' +
+                          '<div class="car-list-model-intro-a">' + '联系电话：' + '<a href= ' +
+                           'tel:'  + content[i].telephone +'>' + content[i].telephone + '</a>' +
+                            '</div>' + '</div>' + '</div>';
+
+                  $(".car-list").append(html);
+                 }
+
+
+
+              // $(".car-list-model").each(function (){
+              //   $(this).click(function (){
+              //     $("#car-poup").popup();
+              //   })
+              // })
+              $(".car-list-model").click(function(event) {
+                event.preventDefault();
+
+                carId = $(this).attr("id");
+                $.ajax({
+                  type: "post",
+                  url: http + '/showCarDetail',
+                  data: {
+                    carId: carId
+                  },
+                  dataType: "JSON",
+                  success: function(data) {
+                    if (data.ERRORCODE == 0) {
+                      // console.log(data);
+                      var files_picture = [];
+                      for (var i = 0; i < data.RESULT.files.length; i++) {
+                        files_picture.push(data.RESULT.files[i].picture);
+                      }
+                      console.log(files_picture);
+                      var pb1 = $.photoBrowser({
+                        items: files_picture
+                      });
+                      $('.car-poup-img').unbind("click");
+                      $(".car-poup-img").click(function() {
+                        pb1.open();
+                      })
+                      if(data.RESULT.files.length > 0){
+                         $(".car-poup-img-img").attr("src",data.RESULT.files[0].picture);
+                       }else{
+                          $(".car-poup-img-img").attr("src" ,"img/none.png");
+                          $('.car-poup-img').unbind("click");
+                       }
+
+
+                      $(".car-poup-con-h1").text(data.RESULT.carName);
+                      $(".car-poup-img-num-left").text(data.RESULT.carName);
+                      $(".car-poup-img-num-right").text(data.RESULT.files.length + "张照片");
+                      $(".car-poup-con-price").text(data.RESULT.price);
+                      $(".car-poup-con-person").text('联系人：' + data.RESULT.contacts);
+                      $(".car-poup-con-a").text(data.RESULT.telephone);
+                      $(".car-poup-con-person").text(data.RESULT.contacts);
+                      $(".car-poup-introduce-p").text(data.RESULT.presentation);
+                      $(".car-poup-introduce-peizhi-p").text(data.RESULT.parameter);
+
+                    } else {
+                      $.toptip(data.RESULT, 'warning');
+                    }
+                  },
+                  error: function(data) {
+                    $.toptip('获取列表信息失败', 'error');
+                  }
+                })
+              });
+            // console.log(data);
+            if(page > data.RESULT.totalPages){
+              console.log(page);
+              $.toptip('数据已加载完毕！', 'warning');
+              loading = false;
+              $(document.body).destroyInfinite();
+              $(".weui-loadmore").hide();
+            }else{
+              status = 0;
+            }
+          } else {
+            $.toptip( data.RESULT, 'warning');
+          }
+        },
+        error: function(data) {
+          $.toptip('获取列表信息失败', 'error');
+        }
+      });
+    }
+
+
+ //阻止默认事件
+      $(".car-list-model-intro-a").click(function (event){
+        event.stopPropagation();
+      });
+
+
+  })
+
+
+
+
+
+
+
+</script>
+</html>
